@@ -1,54 +1,46 @@
-const fs = require('fs');
-const path = require('path');
-const sharp = require('sharp');
-let inputFolder = "";
-const extensionsToConvert = ['.jpg', '.jpeg', '.png'];
+function convertToWebP() {
+    const input = document.getElementById('folderInput');
+    const files = input.files;
+    const preview = document.getElementById('preview');
+    preview.innerHTML = '';
 
-async function convertToWebP(inputFilePath){
-    try{
-        inputFolder = toString(document.getElementById("inputFolder").value);
-        if(!inputFolder){
-            alert("Por favor, introduce una carpeta de entrada.");
-            return;
-        }
-        const image = sharp(inputFilePath);
-        const imageInfo = path.parse(inputFilePath);
-        const outputFilePath = path.join(imageInfo.dir, `${imageInfo.name}.webp`);
-
-        await image.toFile(outputFilePath);
-        console.log(`${inputFilePath} convertido a ${outputFilePath}`);
-    } catch (err){
-        console.error(`Error convirtiendo ${inputFilePath} a WebP:`, err);
+    if (!files.length) {
+      alert('Por favor, selecciona una carpeta primero.');
+      return;
     }
-}
 
-function searchFiles(directory){
-    fs.readdir(directory, (err, files) => {
-        if(err){
-            console.error('Error leyendo el directorio:', err);
-        return;
-        }
+    Array.from(files).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
 
-        files.forEach(file => {
-            const filePath = path.join(directory, file);
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
 
-            fs.stat(filePath, (statErr, stat) => {
-                if(statErr){
-                    console.error('Error obteniendo información del archivo:', statErr);
-                    return;
-                }
+          // Exportamos a WebP
+          canvas.toBlob(function (blob) {
+            const webpURL = URL.createObjectURL(blob);
 
-                if(stat.isDirectory()){
-                    searchFiles(filePath);
-                } else {
-                    const fileExtension = path.extname(file).toLowerCase();
-                    if(extensionsToConvert.includes(fileExtension)){
-                        convertToWebP(filePath);
-                    }
-                }
-            })
-        })
-    })
-}
+            const downloadLink = document.createElement('a');
+            downloadLink.href = webpURL;
+            downloadLink.download = file.name.replace(/\.[^/.]+$/, "") + ".webp";
 
-searchFiles(inputFolder);
+            const previewImg = document.createElement('img');
+            previewImg.src = webpURL;
+            preview.appendChild(previewImg);
+
+            previewImg.onclick = () => {
+              downloadLink.click();
+            };
+          }, 'image/webp');
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+  }
