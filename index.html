@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Conversor de Imágenes a WebP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      padding: 40px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .uploader {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: inline-block;
+      margin-top: 20px;
+    }
+
+    input[type="file"] {
+      margin: 20px 0;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    .preview {
+      margin-top: 20px;
+    }
+
+    .preview img {
+      width: 100px;
+      margin: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Conversor de Imágenes a WebP</h1>
+
+  <div class="uploader">
+    <p>Selecciona una carpeta de imágenes:</p>
+    <input type="text" id="folderInput" webkitdirectory directory multiple>
+    <br>
+    <button onclick="convertToWebP()">Convertir a WebP</button>
+    <div class="preview" id="preview"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
